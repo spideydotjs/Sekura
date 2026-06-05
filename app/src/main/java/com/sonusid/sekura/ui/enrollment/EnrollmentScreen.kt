@@ -46,6 +46,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 @Composable
 fun EnrollmentScreen(
     state: EnrollmentUiState,
+    isQrScan: Boolean,
     onIssuerChange: (String) -> Unit,
     onAccountNameChange: (String) -> Unit,
     onSecretKeyChange: (String) -> Unit,
@@ -54,7 +55,6 @@ fun EnrollmentScreen(
     onBack: () -> Unit,
     onResetError: () -> Unit
 ) {
-    var selectedTab by remember { mutableIntStateOf(0) }
     val haptic = LocalHapticFeedback.current
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
 
@@ -68,7 +68,7 @@ fun EnrollmentScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Account") },
+                title = { Text(if (isQrScan) "Scan QR Code" else "Manual Entry") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -77,71 +77,47 @@ fun EnrollmentScreen(
             )
         }
     ) { padding ->
-        Column(
+        Box(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
         ) {
-            TabRow(selectedTabIndex = selectedTab) {
-                Tab(
-                    selected = selectedTab == 0,
-                    onClick = { 
-                        selectedTab = 0 
-                        onResetError()
-                    },
-                    text = { Text("Scan QR") },
-                    icon = { Icon(Icons.Default.QrCodeScanner, null) }
-                )
-                Tab(
-                    selected = selectedTab == 1,
-                    onClick = { 
-                        selectedTab = 1 
-                        onResetError()
-                    },
-                    text = { Text("Manual Entry") },
-                    icon = { Icon(Icons.Default.Edit, null) }
-                )
-            }
-
-            Box(modifier = Modifier.weight(1f)) {
-                when (selectedTab) {
-                    0 -> {
-                        if (cameraPermissionState.status.isGranted) {
-                            QrScannerView(onCodeScanned = {
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                onQrScanned(it)
-                            })
-                        } else {
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text("Camera permission is required to scan QR codes")
-                                Spacer(Modifier.height(8.dp))
-                                Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
-                                    Text("Grant Permission")
-                                }
-                            }
+            if (isQrScan) {
+                if (cameraPermissionState.status.isGranted) {
+                    QrScannerView(onCodeScanned = {
+                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        onQrScanned(it)
+                    })
+                } else {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("Camera permission is required to scan QR codes")
+                        Spacer(Modifier.height(8.dp))
+                        Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
+                            Text("Grant Permission")
                         }
                     }
-                    1 -> {
-                        ManualEntryForm(
-                            state = state,
-                            onIssuerChange = onIssuerChange,
-                            onAccountNameChange = onAccountNameChange,
-                            onSecretKeyChange = onSecretKeyChange,
-                            onSave = onSaveManual
-                        )
-                    }
                 }
+            } else {
+                ManualEntryForm(
+                    state = state,
+                    onIssuerChange = onIssuerChange,
+                    onAccountNameChange = onAccountNameChange,
+                    onSecretKeyChange = onSecretKeyChange,
+                    onSave = onSaveManual
+                )
             }
 
             state.error?.let {
                 Text(
                     text = it,
                     color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.BottomCenter),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -207,6 +183,7 @@ fun EnrollmentScreenPreview() {
                 accountName = "user@gmail.com",
                 secretKey = "JBSWY3DPFQQFO33N"
             ),
+            isQrScan = false,
             onIssuerChange = {},
             onAccountNameChange = {},
             onSecretKeyChange = {},

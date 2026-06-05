@@ -2,17 +2,13 @@ package com.sonusid.sekura.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sonusid.sekura.data.local.PreferenceManager
 import com.sonusid.sekura.domain.model.Account
 import com.sonusid.sekura.domain.repository.AccountRepository
 import com.sonusid.sekura.domain.totp.TOTPGenerator
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.isActive
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 data class AccountUiState(
@@ -21,6 +17,7 @@ data class AccountUiState(
 )
 
 data class HomeUiState(
+    val userName: String = "",
     val accounts: List<AccountUiState> = emptyList(),
     val remainingSeconds: Int = 30,
     val progress: Float = 1f,
@@ -28,11 +25,12 @@ data class HomeUiState(
 )
 
 class HomeViewModel(
-    private val repository: AccountRepository
+    private val repository: AccountRepository,
+    private val preferenceManager: PreferenceManager
 ) : ViewModel() {
 
     private val _timerFlow = flow {
-        while (currentCoroutineContext().isActive) {
+        while (true) {
             val remaining = TOTPGenerator.getRemainingSeconds()
             emit(remaining)
             delay(500) // Update every half second for smoothness
@@ -41,9 +39,11 @@ class HomeViewModel(
 
     val uiState: StateFlow<HomeUiState> = combine(
         repository.getAllAccounts(),
-        _timerFlow
-    ) { accounts, remaining ->
+        _timerFlow,
+        preferenceManager.userName
+    ) { accounts, remaining, userName ->
         HomeUiState(
+            userName = userName ?: "User",
             accounts = accounts.map { account ->
                 AccountUiState(
                     account = account,

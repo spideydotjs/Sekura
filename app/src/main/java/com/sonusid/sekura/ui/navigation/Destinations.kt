@@ -9,5 +9,11 @@ sealed interface Destination : NavKey {
     data object Home : Destination
 
     @Serializable
-    data object AddAccount : Destination
+    data object Setup : Destination
+
+    @Serializable
+    data class AddAccount(val isQrScan: Boolean) : Destination
+
+    @Serializable
+    data object Settings : Destination
 }

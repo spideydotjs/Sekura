@@ -1,6 +1,7 @@
 package com.sonusid.sekura.ui.home
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -26,12 +29,14 @@ import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
@@ -50,24 +55,35 @@ import androidx.compose.ui.text.AnnotatedString
 @Composable
 fun HomeScreen(
     state: HomeUiState,
-    onAddAccountClick: () -> Unit,
+    onAddAccountClick: (Boolean) -> Unit,
+    onSettingsClick: () -> Unit,
     onDeleteAccount: (Account) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showAddOptions by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+
     Scaffold(
         modifier = modifier,
         topBar = {
             LargeTopAppBar(
                 title = {
-                    Text(
-                        "Sekura",
-                        style = MaterialTheme.typography.headlineLarge.copy(
-                            fontWeight = FontWeight.Bold
+                    Column {
+                        Text(
+                            "Sekura",
+                            style = MaterialTheme.typography.headlineLarge.copy(
+                                fontWeight = FontWeight.Bold
+                            )
                         )
-                    )
+                        Text(
+                            "Hello, ${state.userName}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
                 },
                 actions = {
-                    IconButton(onClick = { /* TODO */ }) {
+                    IconButton(onClick = onSettingsClick) {
                         Icon(Icons.Default.Settings, contentDescription = "Settings")
                     }
                 },
@@ -79,7 +95,7 @@ fun HomeScreen(
         },
         floatingActionButton = {
             LargeFloatingActionButton(
-                onClick = onAddAccountClick,
+                onClick = { showAddOptions = true },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 shape = MaterialTheme.shapes.extraLarge
@@ -92,7 +108,46 @@ fun HomeScreen(
             }
         }
     ) { innerPadding ->
-        if (state.accounts.isEmpty() && !state.isLoading) {
+        if (showAddOptions) {
+            ModalBottomSheet(
+                onDismissRequest = { showAddOptions = false },
+                sheetState = sheetState
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 32.dp)
+                ) {
+                    ListItem(
+                        headlineContent = { Text("Scan QR Code") },
+                        leadingContent = { Icon(Icons.Default.QrCodeScanner, null) },
+                        modifier = Modifier.clickable {
+                            showAddOptions = false
+                            onAddAccountClick(true)
+                        }
+                    )
+                    ListItem(
+                        headlineContent = { Text("Enter Manually") },
+                        leadingContent = { Icon(Icons.Default.Edit, null) },
+                        modifier = Modifier.clickable {
+                            showAddOptions = false
+                            onAddAccountClick(false)
+                        }
+                    )
+                }
+            }
+        }
+
+        if (state.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else if (state.accounts.isEmpty()) {
             EmptyHomeContent(innerPadding)
         } else {
             AccountList(
@@ -264,7 +319,8 @@ fun HomeScreenPreview() {
                 progress = 0.5f,
                 isLoading = false
             ),
-            onAddAccountClick = {},
+            onAddAccountClick = { _ -> },
+            onSettingsClick = {},
             onDeleteAccount = {}
         )
     }
