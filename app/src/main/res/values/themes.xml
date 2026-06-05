@@ -1,0 +1,4 @@
+<resources>
+
+    <style name="Theme.Sekura" parent="Theme.MaterialComponents.Light" />
+</resources>
