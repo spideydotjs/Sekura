@@ -51,6 +51,7 @@ googleApiClientAndroid = "2.9.0"
 googleApiClientGson = "2.9.0"
 googleHttpClientAndroid = "2.1.0"
 googleApiServicesDrive = "v3-rev20241027-2.0.0"
+googleServices = "4.4.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -116,4 +117,5 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "googleDevtoolsKsp" }
 jetbrains-kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "jetbrainsKotlinPluginSerialization" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 
