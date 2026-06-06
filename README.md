@@ -1,6 +1,6 @@
 # <img src=".github/logo.svg" width="64" height="64" align="center" alt="Sekura Logo"> Sekura
 
-> Your secure, offline-first 2FA companion. Built with Jetpack Compose, Room, and SQLCipher.
+Your secure, offline-first 2FA companion. Built with Jetpack Compose, Room, and SQLCipher.
 
 ---
 
@@ -8,17 +8,17 @@
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
-*   **🔒 Encrypted Database**: Your secrets are stored locally in an SQLite database encrypted with **SQLCipher** and managed through **Room**.
-*   **☁️ Google Drive Backup**: Secure, encrypted backup and restore integration via Google Drive (using Google Sign-In), ensuring you never lose access to your accounts.
-*   **📷 QR Enrollment**: Instantly scan and add 2FA credentials using the **Google MLKit Barcode Scanning** and **Jetpack CameraX** APIs.
-*   **🎨 Material 3 Design**: A gorgeous, modern user interface featuring smooth transitions, dynamic theme colors, and a clean, responsive layout.
-*   **🚀 Offline-First**: Generating codes requires absolutely zero internet access. All data resides securely on your device.
+*   **Encrypted Database**: Your secrets are stored locally in an SQLite database encrypted with **SQLCipher** and managed through **Room**.
+*   **Google Drive Backup**: Secure, encrypted backup and restore integration via Google Drive (using Google Sign-In), ensuring you never lose access to your accounts.
+*   **QR Enrollment**: Instantly scan and add 2FA credentials using the **Google MLKit Barcode Scanning** and **Jetpack CameraX** APIs.
+*   **Material 3 Design**: A clean, modern user interface featuring smooth transitions, dynamic theme colors, and a clean, responsive layout.
+*   **Offline-First**: Generating codes requires absolutely zero internet access. All data resides securely on your device.
 
 ---
 
-## 🛠️ Tech Stack & Architecture
+## Tech Stack & Architecture
 
 - **UI**: Jetpack Compose, Material 3, Compose Navigation
 - **Local DB**: Room Database, SQLCipher (encryptions)
@@ -29,7 +29,7 @@
 
 ---
 
-## 🏗️ Getting Started
+## Getting Started
 
 ### Prerequisites
 *   Android Studio (Ladybug or newer recommended)
@@ -44,7 +44,7 @@ To compile and build a debug APK locally, clone the repository and run:
 
 ---
 
-## 🚀 CI/CD Release Pipeline
+## CI/CD Release Pipeline
 
 This project includes a fully automated GitHub Actions workflow to build, sign, and publish your release APKs directly to GitHub Releases.
 
@@ -63,6 +63,6 @@ For step-by-step instructions on generating the secrets, see the [Build & Releas
 
 ---
 
-## 📄 License & Contribution
+## License & Contribution
 
 This project is licensed under the [MIT License](LICENSE). See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to report bugs, suggest features, and submit pull requests.
